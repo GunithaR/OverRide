@@ -6,7 +6,7 @@ algorithm and adapt every time the player takes a piece of the system away.
 
 Joint project for **SE3032 Graphics & Visualization** and **SE3062 Intelligent Systems**, SLIIT, 2026.
 
-> **Unity version:** `<PIN_EXACT_LTS_VERSION_HERE>` with the Universal Render Pipeline.
+> **Unity version:** `Unity 6.3 LTS (6000.3.25f1)` with the Universal Render Pipeline.
 > Everyone must install exactly this version. Do not open the project in any other version.
 
 ## Team
@@ -17,11 +17,6 @@ Joint project for **SE3032 Graphics & Visualization** and **SE3062 Intelligent S
 | Gunitha | Systems Engineer | Hunter (Seeker) | Player controller, weapon, health and damage, noise events | Ilzam |
 | Ilzam | Core Developer | Duelist (Warden) | Agent sensors (vision, hearing) | Gunitha |
 | Rithish | Agent Controller | Pathfinder (Wisp) | Agent motor, prefab wiring, shared contracts | Shajeeve |
-
-## Design documents
-
-- Game Design Document: `<GDD_LINK>`
-- Team Workplan: `<WORKPLAN_LINK>`
 
 ## Opening the project
 

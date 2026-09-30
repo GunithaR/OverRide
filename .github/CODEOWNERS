@@ -1,0 +1,69 @@
+# OVERRIDE code owners. Owner first, then buddy, so the buddy is requested on the owner's PRs.
+# The LAST matching rule wins, so specific paths come after general ones.
+#   Shajeeve (World Builder)    buddy: Rithish
+#   Gunitha  (Systems Engineer) buddy: Ilzam
+#   Ilzam    (Core Developer)   buddy: Gunitha
+#   Rithish  (Agent Controller) buddy: Shajeeve
+
+*                                            @Shajeeve567 @GunithaR @MohamedIlzam @rithish279
+
+# Repo config
+/.github/                                    @GunithaR @rithish279
+/.gitignore                                  @GunithaR @rithish279
+/.gitattributes                              @GunithaR @rithish279
+/Packages/                                   @GunithaR @rithish279
+/ProjectSettings/                            @GunithaR @rithish279 @Shajeeve567
+
+# Shajeeve: World Builder + Director
+/Assets/_Project/Scripts/Level/              @Shajeeve567 @rithish279
+/Assets/_Project/Scripts/AI/Director/        @Shajeeve567 @rithish279
+/Assets/_Project/Scenes/Main/                @Shajeeve567 @rithish279
+/Assets/_Project/Settings/                   @Shajeeve567 @rithish279
+/Assets/_Project/Art/Materials/              @Shajeeve567 @rithish279
+/Assets/_Project/Art/Textures/Environment/   @Shajeeve567 @rithish279
+/Assets/_Project/Prefabs/Level/              @Shajeeve567 @rithish279
+
+# Gunitha: Systems Engineer + Hunter
+/Assets/_Project/Scripts/Player/             @GunithaR @MohamedIlzam
+/Assets/_Project/Scripts/Gameplay/           @GunithaR @MohamedIlzam
+/Assets/_Project/Scripts/UI/                 @GunithaR @MohamedIlzam
+/Assets/_Project/Scripts/AI/Hunter/          @GunithaR @MohamedIlzam
+/Assets/_Project/Input/                      @GunithaR @MohamedIlzam
+/Assets/_Project/Audio/                      @GunithaR @MohamedIlzam
+/Assets/_Project/Data/Weapons/               @GunithaR @MohamedIlzam
+/Assets/_Project/Data/Noise/                 @GunithaR @MohamedIlzam
+/Assets/_Project/Data/Gameplay/              @GunithaR @MohamedIlzam
+/Assets/_Project/Prefabs/Player/             @GunithaR @MohamedIlzam
+/Assets/_Project/Prefabs/Interactables/      @GunithaR @MohamedIlzam
+/Assets/_Project/Prefabs/UI/                 @GunithaR @MohamedIlzam
+
+# Ilzam: Core Developer + Duelist
+/ArtSource/                                  @MohamedIlzam @GunithaR
+/Assets/_Project/Art/Models/                 @MohamedIlzam @GunithaR
+/Assets/_Project/Art/Textures/Props/         @MohamedIlzam @GunithaR
+/Assets/_Project/Scripts/Sensors/            @MohamedIlzam @GunithaR
+/Assets/_Project/Scripts/AI/Duelist/         @MohamedIlzam @GunithaR
+
+# Rithish: Agent Controller + Pathfinder + contracts
+/Assets/_Project/Scripts/Core/               @rithish279 @Shajeeve567
+/Assets/_Project/Scripts/Motor/              @rithish279 @Shajeeve567
+/Assets/_Project/Scripts/AI/Navigation/      @rithish279 @Shajeeve567
+/Assets/_Project/Scripts/AI/Pathfinder/      @rithish279 @Shajeeve567
+/Assets/_Project/Art/Animations/             @rithish279 @Shajeeve567
+/Assets/_Project/Prefabs/Agents/             @rithish279 @Shajeeve567
+/Assets/_Project/Data/Agents/                @rithish279 @Shajeeve567
+/Docs/Contracts.md                           @rithish279 @Shajeeve567
+
+# Personal files
+/Assets/_Project/Scenes/Sandbox/Shajeeve*    @Shajeeve567 @rithish279
+/Assets/_Project/Scenes/Sandbox/Gunitha*     @GunithaR @MohamedIlzam
+/Assets/_Project/Scenes/Sandbox/Ilzam*       @MohamedIlzam @GunithaR
+/Assets/_Project/Scenes/Sandbox/Rithish*     @rithish279 @Shajeeve567
+/Docs/DesignLog/Shajeeve.md                  @Shajeeve567 @rithish279
+/Docs/DesignLog/Gunitha.md                   @GunithaR @MohamedIlzam
+/Docs/DesignLog/Ilzam.md                     @MohamedIlzam @GunithaR
+/Docs/DesignLog/Rithish.md                   @rithish279 @Shajeeve567
+/Docs/Evidence/Shajeeve/                     @Shajeeve567 @rithish279
+/Docs/Evidence/Gunitha/                      @GunithaR @MohamedIlzam
+/Docs/Evidence/Ilzam/                        @MohamedIlzam @GunithaR
+/Docs/Evidence/Rithish/                      @rithish279 @Shajeeve567
