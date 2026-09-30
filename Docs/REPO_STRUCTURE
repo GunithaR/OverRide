@@ -1,0 +1,188 @@
+# OVERRIDE repository structure
+
+What every folder is for, who owns it, and where new files go. If this file and `.github/CODEOWNERS`
+ever disagree, CODEOWNERS is what GitHub enforces: fix whichever one is wrong in a pull request.
+
+**Owners:** Shajeeve (World Builder, Director) · Gunitha (Systems Engineer, Hunter) ·
+Ilzam (Core Developer, Duelist) · Rithish (Agent Controller, Pathfinder)
+
+**Buddies (reviewers):** Shajeeve ↔ Rithish · Gunitha ↔ Ilzam
+
+---
+
+## 1. Top level
+
+| Path | What it is for | Primary owner | In Git as | Notes |
+|---|---|---|---|---|
+| `Assets/` | Everything Unity imports | See Section 2 | Normal + LFS | Only `_Project/` and `ThirdParty/` are ours to organise |
+| `Assets/_Project/` | All work made by the team | See Section 2 | Normal + LFS | Underscore keeps it at the top of the Project window |
+| `Assets/ThirdParty/` | Imported CC0 packs (textures, sounds) | Whoever imports it | Normal + LFS | Add every pack to the Third-party table in `README.md` with source and licence |
+| `Packages/` | Unity package manifest | Gunitha, Rithish | Normal | Created by Unity. Don't add packages without telling the team |
+| `ProjectSettings/` | Unity project settings (physics, input, tags, layers, quality) | Gunitha, Rithish, Shajeeve | Normal | Created by Unity. Physics layers and collision matrix are Gunitha's; lighting and quality are Shajeeve's |
+| `ArtSource/` | Blender `.blend` source files | Ilzam | LFS | Outside `Assets/` so Unity never tries to import `.blend` |
+| `Docs/` | Design logs, evidence, contracts, setup guide, this file | Each member for their own files | Normal + LFS (images) | Not imported by Unity |
+| `Tools/github/` | Repo helper scripts | Gunitha | Normal | `create-labels.sh` creates the issue labels |
+| `.github/` | CODEOWNERS, PR template, issue templates | Gunitha, Rithish | Normal | Changes affect everyone's review flow |
+| Root files | `.gitignore`, `.gitattributes`, `.editorconfig`, `README.md`, `CONTRIBUTING.md` | Gunitha, Rithish | Normal | Changing `.gitattributes` after art is committed does **not** move old files to LFS |
+
+Never committed (see `.gitignore`): `Library/`, `Temp/`, `Obj/`, `Logs/`, `UserSettings/`, `Build/`,
+editor project files (`*.sln`, `*.csproj`), Profiler `.data` captures, video footage, Blender backups.
+
+---
+
+## 2. `Assets/_Project/`
+
+### Scripts
+
+Each area has its own assembly (`.asmdef`). An assembly can only use code from the assemblies listed
+in "May use". This is what keeps AI brains separate from visuals (IS rubric: gameplay integration).
+
+| Folder | Assembly | May use | What goes here | Primary owner | Reviewer |
+|---|---|---|---|---|---|
+| `Scripts/Core/` | `Override.Core` | nothing | Shared contracts: `WorldSnapshot`, `AgentCommand`, `IAgentBrain`; `NoiseEvent` type; blackboard; shared interfaces such as `IDamageable` | Rithish (contracts steward) | Shajeeve |
+| `Scripts/AI/Director/` | `Override.AI` | Core | Director brain: simulated annealing over spawn and door-lock plans, tension score | Shajeeve | Rithish |
+| `Scripts/AI/Hunter/` | `Override.AI` | Core | Seeker brain: Bayesian belief grid, its own grid A*, lure logic | Gunitha | Ilzam |
+| `Scripts/AI/Duelist/` | `Override.AI` | Core | Warden brain: depth-2 Expectimax, evaluation function, player-habit learning | Ilzam | Gunitha |
+| `Scripts/AI/Pathfinder/` | `Override.AI` | Core | Wisp brain: exposure-weighted A*, destination prediction, ambush choice | Rithish | Shajeeve |
+| `Scripts/AI/Navigation/` | `Override.AI` | Core | Waypoint graph data structure and graph A* used by the Pathfinder | Rithish | Shajeeve |
+| `Scripts/Sensors/` | `Override.Sensors` | Core | Vision (field of view + two raycasts) and hearing; post sightings to the blackboard | Ilzam | Gunitha |
+| `Scripts/Motor/` | `Override.Motor` | Core | Turns `AgentCommand` into movement, rotation, hover motion and Animator parameters | Rithish | Shajeeve |
+| `Scripts/Player/Controller/` | `Override.Player` | Core, Input System | Movement, first-person camera, sprint, crouch, jump | Gunitha | Ilzam |
+| `Scripts/Player/Weapon/` | `Override.Player` | Core, Input System | Rifle: raycast, recoil, spread, reload, ammo, hit markers, procedural sway and reload motion | Gunitha | Ilzam |
+| `Scripts/Player/Health/` | `Override.Player` | Core, Input System | Health and damage for the player **and** enemies | Gunitha | Ilzam |
+| `Scripts/Player/Interaction/` | `Override.Player` | Core, Input System | Doors, crate barricades, scrap-canister throwable | Gunitha | Ilzam |
+| `Scripts/Player/Noise/` | `Override.Player` | Core, Input System | Noise emitters (footsteps, shots, doors, crates, canister) | Gunitha | Ilzam |
+| `Scripts/Level/` | `Override.Level` | Core | Markup components (waypoint, cover point, spawn point, zone volume, Seeker start, Warden guard post); zone lighting switch | Shajeeve | Rithish |
+| `Scripts/Gameplay/` | `Override.Gameplay` | Core, AI, Sensors, Motor, Player, Level | The glue: terminals and hacking, game state, defence-wave trigger, respawn, alarm level, building the `WorldSnapshot`, ticking brains | Gunitha | Ilzam |
+| `Scripts/UI/` | `Override.UI` | Core, Player, Gameplay, TextMeshPro | HUD (health, ammo, crosshair, alarm, hack progress), menus | Gunitha | Ilzam |
+| `Scripts/DebugOverlay/` | `Override.DebugOverlay` | Core, AI, Input System | F1 toggle and overlay host; each agent owner adds their own panel | **Not yet assigned** (see Section 6) | — |
+
+Dependency flow:
+
+```
+Player/Interaction ──(NoiseEvent, door/crate state)──┐
+Sensors ──(sightings, heard noises)──────────────────┤
+Level markup ──(waypoints, cover, spawns, zones)─────┤
+                                                      ▼
+                              WorldSnapshot      (Scripts/Core)
+                                                      ▼
+                         IAgentBrain.Tick()      (Scripts/AI, plain C#)
+                                                      ▼
+                              AgentCommand       (Scripts/Core)
+                                                      ▼
+                Motor → movement, rotation, Animator  (Scripts/Motor)
+```
+
+Two points that often confuse people:
+
+- **`NoiseEvent` lives in `Core`, but Gunitha writes it.** Sensors and AI must read it without
+  depending on Player code. Gunitha adds it through a pull request that Rithish approves.
+- **The Hunter's A\* is not the Navigation A\*.** The Seeker searches a 2 m grid; the Wisps search the
+  waypoint graph. Each owner keeps their own search in their own agent folder.
+
+### Content folders
+
+| Folder | What goes here | File types | Primary owner | Reviewer |
+|---|---|---|---|---|
+| `Data/Weapons/` | Rifle config: damage, fire rate, spread, recoil, magazine, reload | ScriptableObject `.asset` | Gunitha | Ilzam |
+| `Data/Noise/` | Noise radius table from the GDD | ScriptableObject `.asset` | Gunitha | Ilzam |
+| `Data/Gameplay/` | Hack duration, alarm rise and decay, health stations, respawn rules | ScriptableObject `.asset` | Gunitha | Ilzam |
+| `Data/Agents/` | Agent stats and brain tuning (health, speed, vision, weights) | ScriptableObject `.asset` | Rithish in CODEOWNERS; see Section 6 | Shajeeve |
+| `Art/Models/<Model>/` | Exported FBX for Wisp, Terminal, Rifle, Warden, Seeker | `.fbx` (LFS) | Ilzam | Gunitha |
+| `Art/Materials/` | Environment and trim-sheet materials | `.mat` | Shajeeve | Rithish |
+| `Art/Textures/Environment/` | Environment textures (max 2K) | `.png`, `.tga`, `.exr` (LFS) | Shajeeve | Rithish |
+| `Art/Textures/Props/` | Custom model textures (max 1K) | `.png`, `.tga` (LFS) | Ilzam | Gunitha |
+| `Art/Animations/` | Animator controllers and clips for enemies | `.controller`, `.anim` | Rithish | Shajeeve |
+| `Art/VFX/` | Muzzle flash, tracers, impacts, sparks, smoke, deaths | Particle prefabs, `.mat`, textures | **Split**: see Section 6 | — |
+| `Art/Shaders/` | Custom shaders or Shader Graphs (e.g. emissive swap) | `.shadergraph`, `.shader` | **Not yet assigned** | — |
+| `Prefabs/Player/` | Player rig, first-person rifle view | `.prefab` | Gunitha | Ilzam |
+| `Prefabs/Agents/` | Seeker, Warden, Wisp: brain + sensors + motor + model | `.prefab` | Rithish | Shajeeve |
+| `Prefabs/Interactables/` | Doors, crates, canister, terminals, health stations, ammo crates | `.prefab` | Gunitha | Ilzam |
+| `Prefabs/Level/` | Modular level pieces, markup prefabs, lighting rigs | `.prefab` | Shajeeve | Rithish |
+| `Prefabs/VFX/` | Ready-to-spawn effect prefabs (pooled) | `.prefab` | **Split**: see Section 6 | — |
+| `Prefabs/UI/` | HUD and menu prefabs | `.prefab` | Gunitha | Ilzam |
+| `Scenes/Main/` | `Main.unity`, the real level | `.unity` | **Shajeeve only edits it** | Rithish |
+| `Scenes/Sandbox/` | One test scene per member: `<Name>.unity` | `.unity` | Each member for their own | Their buddy |
+| `Scenes/Menus/` | Main menu, game over, victory | `.unity` | Gunitha (menus) | Ilzam |
+| `Audio/SFX/` | Gunshots, footsteps, doors, drone hum, alarms, hack beeps | `.wav`, `.ogg` (LFS) | Gunitha | Ilzam |
+| `Audio/Music/` | Ambient hum and tension layer | `.ogg` (LFS) | Gunitha | Ilzam |
+| `Audio/Mixers/` | Audio Mixer and groups | `.mixer` | Gunitha | Ilzam |
+| `Input/` | Input System action asset | `.inputactions` | Gunitha | Ilzam |
+| `Settings/` | URP pipeline assets, renderer, post-process volume profiles per zone | `.asset` | Shajeeve | Rithish |
+| `Tests/EditMode/` | Fast tests for plain C# (brains, belief update, A*, evaluation) | `.cs` | Each member for their own code | Their buddy |
+| `Tests/PlayMode/` | Tests that need a running scene (physics, sensors) | `.cs` | Each member for their own code | Their buddy |
+
+---
+
+## 3. `Docs/` and `ArtSource/`
+
+| Path | What goes here | Owner |
+|---|---|---|
+| `Docs/DesignLog/<Name>.md` | Decisions, numbers changed and why, AI help used, viva answers | Each member |
+| `Docs/Evidence/<Name>/` | Profiler screenshots, before/after stats, wireframes, UV layouts, named `YYYY-MM-DD_<topic>_<before|after>.png` | Each member |
+| `Docs/Contracts.md` | Agreed shape of the shared contracts and change log | Rithish |
+| `Docs/SETUP.md` | First-time setup, merge driver, daily Git loop | Gunitha |
+| `Docs/REPO_STRUCTURE.md` | This file | Gunitha |
+| `ArtSource/<Model>/` | `.blend` files, committed at each stage: blockout → topology → UVs → texture | Ilzam |
+
+---
+
+## 4. What each member owns
+
+| Member | Code | Content | Personal |
+|---|---|---|---|
+| Shajeeve | `Scripts/Level/`, `Scripts/AI/Director/` | `Scenes/Main/`, `Settings/`, `Art/Materials/`, `Art/Textures/Environment/`, `Prefabs/Level/` | Sandbox, design log, evidence |
+| Gunitha | `Scripts/Player/*`, `Scripts/Gameplay/`, `Scripts/UI/`, `Scripts/AI/Hunter/`, `NoiseEvent` in Core (via PR) | `Data/Weapons/`, `Data/Noise/`, `Data/Gameplay/`, `Input/`, `Audio/*`, `Prefabs/Player/`, `Prefabs/Interactables/`, `Prefabs/UI/`, `Scenes/Menus/`, repo config | Sandbox, design log, evidence |
+| Ilzam | `Scripts/Sensors/`, `Scripts/AI/Duelist/` | `ArtSource/`, `Art/Models/`, `Art/Textures/Props/`, weak-point colliders on models | Sandbox, design log, evidence |
+| Rithish | `Scripts/Core/`, `Scripts/Motor/`, `Scripts/AI/Navigation/`, `Scripts/AI/Pathfinder/` | `Art/Animations/`, `Prefabs/Agents/`, `Data/Agents/`, `Docs/Contracts.md` | Sandbox, design log, evidence |
+
+---
+
+## 5. Where does it go?
+
+| I am adding… | Put it in | Remember |
+|---|---|---|
+| A new C# script | The `Scripts/` folder for its area | One class per file; file name = class name |
+| A number someone may tune | A ScriptableObject in `Data/<area>/` | Never hard-code it |
+| A model | `.blend` in `ArtSource/<Model>/`, FBX in `Art/Models/<Model>/` | Commit each modelling stage |
+| A texture | `Art/Textures/Environment/` or `Art/Textures/Props/` | 2K max environment, 1K max props |
+| A CC0 asset pack | `Assets/ThirdParty/<PackName>/` | Add it to the README licence table |
+| Something to test alone | Your sandbox scene | Hand over a prefab, not scene edits |
+| Something for the real level | A prefab, then ask Shajeeve to place it in `Main.unity` | Only Shajeeve edits the main scene |
+| A profiler capture | Screenshot in `Docs/Evidence/<Name>/` | Raw `.data` files stay out of Git |
+| A change to `WorldSnapshot`, `AgentCommand` or `IAgentBrain` | `Scripts/Core/` through a pull request | Rithish must approve |
+
+Moving or renaming anything inside `Assets/`: do it **inside Unity**, not in File Explorer, so the
+`.meta` file moves with it. Commit the `.meta` changes too.
+
+---
+
+## 6. Open ownership questions (decide at the next sync)
+
+These folders are not assigned in the GDD or Workplan, or two people will need them. Once decided,
+update this file and `.github/CODEOWNERS` in the same pull request.
+
+| Folder | Why it's open | Suggested answer |
+|---|---|---|
+| `Art/VFX/`, `Prefabs/VFX/` | Weapon effects are Gunitha's; enemy damage and death effects are Rithish's (GDD Section 5) | Subfolders `Weapon/` (Gunitha) and `Enemies/` (Rithish) |
+| `Data/Agents/` | CODEOWNERS gives it to Rithish, but each agent's tuning belongs to that agent's owner, and those numbers are what each person defends in the viva | Subfolders `Director/`, `Hunter/`, `Duelist/`, `Pathfinder/`, each owned by the agent owner |
+| `Scripts/DebugOverlay/` | Every agent needs a panel; nobody owns the F1 toggle and host | One owner for the host (suggest Rithish, since the motor already draws agent debug gizmos); each agent owner writes their own panel |
+| `Art/Shaders/` | Nothing planned needs a custom shader yet | Whoever first needs one; likely Shajeeve for the emissive zone swap |
+| `Tests/` | No owner by default | Subfolders per area, owned like the code they test |
+
+---
+
+## 7. Naming conventions (proposed: agree at the next sync)
+
+The GDD fixes code style only. These asset-name prefixes are a suggestion to keep folders searchable.
+
+| Asset | Pattern | Example |
+|---|---|---|
+| C# class and file | `PascalCase` | `BeliefGrid.cs` |
+| Prefab | `PascalCase` | `Wisp.prefab`, `CargoCrate.prefab` |
+| Material | `M_<Name>` | `M_WallPanel_Grey` |
+| Texture | `T_<Name>_<Map>` | `T_Wisp_BaseColor`, `T_Wisp_Normal` |
+| ScriptableObject config | `<Thing>Config` | `RifleConfig.asset`, `HunterConfig.asset` |
+| Animation clip | `<Unit>_<Action>` | `Warden_Fire`, `Warden_Death` |
+| Scene | `PascalCase` | `Main.unity`, `Gunitha.unity` |
+| Blender file | `<Model>_v<NN>_<stage>.blend` | `Wisp_v02_topology.blend` |
