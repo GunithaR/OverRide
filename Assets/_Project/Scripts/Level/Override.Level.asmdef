@@ -1,0 +1,14 @@
+{
+    "name": "Override.Level",
+    "rootNamespace": "Override.Level",
+    "references": ["Override.Core"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

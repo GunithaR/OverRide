@@ -1,0 +1,14 @@
+{
+    "name": "Override.AI",
+    "rootNamespace": "Override.AI",
+    "references": ["Override.Core"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

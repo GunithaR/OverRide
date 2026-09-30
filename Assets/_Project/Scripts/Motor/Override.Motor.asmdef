@@ -1,0 +1,14 @@
+{
+    "name": "Override.Motor",
+    "rootNamespace": "Override.Motor",
+    "references": ["Override.Core"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

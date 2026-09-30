@@ -1,0 +1,67 @@
+# =========================================================
+# OVERRIDE — .gitignore (Unity project at repo root)
+# =========================================================
+
+# ---------- Unity-generated folders (rebuilt on open) ----------
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Bb]uild/
+/[Bb]uilds/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Keep .meta files inside Assets (never ignore them)
+!/[Aa]ssets/**/*.meta
+
+# ---------- Code editor files (Unity regenerates these) ----------
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# ---------- Crash reports and build output ----------
+sysinfo.txt
+mono_crash.*
+crashlytics-build.properties
+*.apk
+*.aab
+*.app
+*.unitypackage
+*.unitypackage.meta
+
+# ---------- Blender backups (keep only the real .blend) ----------
+*.blend1
+*.blend2
+*.blend@
+
+# ---------- Profiler captures (save screenshots to Docs/Evidence instead) ----------
+*.data
+
+# ---------- Demo video footage (lives on the shared drive) ----------
+*.mp4
+*.mov
+*.mkv
+*.avi
+
+# ---------- OS files ----------
+.DS_Store
+Thumbs.db
+desktop.ini

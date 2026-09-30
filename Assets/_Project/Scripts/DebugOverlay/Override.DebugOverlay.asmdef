@@ -1,0 +1,14 @@
+{
+    "name": "Override.DebugOverlay",
+    "rootNamespace": "Override.DebugOverlay",
+    "references": ["Override.Core", "Override.AI", "Unity.InputSystem"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

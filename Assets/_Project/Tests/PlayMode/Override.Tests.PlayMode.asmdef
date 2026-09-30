@@ -1,0 +1,24 @@
+{
+    "name": "Override.Tests.PlayMode",
+    "rootNamespace": "Override.Tests.PlayMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Override.Core",
+        "Override.AI",
+        "Override.Sensors",
+        "Override.Motor",
+        "Override.Player",
+        "Override.Level",
+        "Override.Gameplay"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

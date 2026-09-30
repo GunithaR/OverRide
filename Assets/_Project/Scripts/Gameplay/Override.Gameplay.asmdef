@@ -1,0 +1,14 @@
+{
+    "name": "Override.Gameplay",
+    "rootNamespace": "Override.Gameplay",
+    "references": ["Override.Core", "Override.AI", "Override.Sensors", "Override.Motor", "Override.Player", "Override.Level"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
